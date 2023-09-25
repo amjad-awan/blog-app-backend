@@ -21,19 +21,19 @@ export const registerController = async (req, res) => {
           success: false,
           message: "Password is required",
         });
-        case !role:
-          res.status(400).json({
-            success: false,
-            message: "Role is required",
-          });
+      case !role:
+        res.status(400).json({
+          success: false,
+          message: "Role is required",
+        });
     }
 
     // check this email already exist
-    const isAccountExist = await userModel.findOne({email});
+    const isAccountExist = await userModel.findOne({ email });
     if (!isAccountExist) {
       const hashed = await doHashed(password);
       // create admin
-    await userModel({
+      await userModel({
         name,
         email,
         role,
@@ -57,11 +57,10 @@ export const registerController = async (req, res) => {
   }
 };
 
-
-
 // create user
 export const loginController = async (req, res) => {
-  const {email, password} = req.body;
+  const { email, password } = req.body;
+
   try {
     switch (true) {
       case !email:
@@ -76,16 +75,15 @@ export const loginController = async (req, res) => {
         });
     }
     // check this email already exist
-    let isAccountExist = await userModel.findOne({email});
-    const token=await createToken(isAccountExist._id)
+    let isAccountExist = await userModel.findOne({ email });
+    const token = isAccountExist && (await createToken(isAccountExist._id));
 
-  
-    if(isAccountExist){
+    if (isAccountExist) {
       res.status(200).json({
         success: true,
         message: "user login successfully",
-        user:isAccountExist,
-        token
+        user: isAccountExist,
+        token,
       });
     } else {
       res.status(400).json({

@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import userRoute from "./routes/userRoute.js";
 import blogRoute from "./routes/blogRouter.js";
 import connectDB from "./db.js";
+// import * as path from 'path'
 
 
 dotenv.config();
@@ -20,6 +21,12 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+
+// app.use(express.static(path.join(__dirname, "./client/build")));
+
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "./client/build/index.html"));
+// });
 //routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/blog", blogRoute);

@@ -75,6 +75,8 @@ export const getSpecificUserBlogsController = async (req, res) => {
 
 // get single blog
 export const getSingleBlogController = async (req, res) => {
+  console.log("blogId", req.params);
+
   const { blogId } = req.params;
 
   try {
