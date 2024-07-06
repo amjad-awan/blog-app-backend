@@ -75,7 +75,6 @@ export const getSpecificUserBlogsController = async (req, res) => {
 
 // get single blog
 export const getSingleBlogController = async (req, res) => {
-  console.log("blogId", req.params);
 
   const { blogId } = req.params;
 
@@ -125,31 +124,55 @@ export const likeDislikeController = async (req, res) => {
   }
 };
 
-// add comments
 export const addCommentsController = async (req, res) => {
   const { blogId } = req.params;
   const { blogername, comment } = req.body;
-  try {
-    const blog = await blogModel.findById(blogId);
-    console.log("blog 133 ===", blog);
-    await blog.updateOne({ $push: { comment: { text: comment, blogername } } });
+  console.log("req.body",req.body, blogId)
 
+  // Validate the blogId
+  if (!blogId || !blogername || !comment) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid input data",
+    });
+  }
+
+  try {
+    // Find the blog by ID and add the new comment in a single operation
+    const blog = await blogModel.findByIdAndUpdate(
+      blogId,
+      { $push: { comment: { text: comment, blogername } } },
+      { new: true, select: { comment: { $slice: -1 } } } // Return only the most recent comment
+    );
+
+    if (!blog) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+    // Get the most recent comment
+    const recentComment = blog.comment[0];
     res.status(200).json({
       success: true,
-      message: "comment added",
+      message: "Comment added",
+      comment: recentComment, // Return only the most recent comment
     });
   } catch (error) {
+    console.error("Error adding comment:", error);
     res.status(500).json({
       success: false,
-      message: "something went wronge",
+      message: "Something went wrong",
     });
   }
 };
+
 // get photo
 export const blogPhotoController = async (req, res) => {
+   console.log("req.params.blogId",req.params.blogId)
   try {
     const blog = await blogModel.findById(req.params.blogId).select("photo");
-    if (blog.photo.data) {
+    if (blog.photo.data){
       res.set("Content-type", blog.photo.contentType);
       return res.status(200).send(blog.photo.data);
     }
@@ -162,3 +185,4 @@ export const blogPhotoController = async (req, res) => {
     });
   }
 };
+
