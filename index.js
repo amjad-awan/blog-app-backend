@@ -7,9 +7,6 @@ import dotenv from "dotenv";
 import userRoute from "./routes/userRoute.js";
 import blogRoute from "./routes/blogRouter.js";
 import connectDB from "./db.js";
-// import * as path from 'path'
-
-
 dotenv.config();
 connectDB();
 const PORT = process.env.PORT || 5000;
